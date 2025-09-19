@@ -42,13 +42,13 @@ except ImportError:
     pyttsx3 = None
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
-app.config['AUDIO_FOLDER'] = os.path.join(app.root_path, 'static', 'audio')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+app.config['AUDIO_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'audio')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 # Use a consistent absolute path for SQLite DB within the app directory
-DB_PATH = os.path.join(app.root_path, 'queries.db')
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'queries.db')
 
 # Load environment variables from .env (if present)
 load_dotenv()
@@ -680,7 +680,7 @@ def save_to_csv(query: str, response: str):
     from datetime import datetime
     
     # Create data directory if it doesn't exist
-    data_dir = os.path.join(app.root_path, 'data')
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
     os.makedirs(data_dir, exist_ok=True)
     
     # CSV file path

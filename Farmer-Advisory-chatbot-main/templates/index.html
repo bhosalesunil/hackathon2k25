@@ -5,260 +5,391 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriSage  – AI Farmer Assistant</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       color: #333;
     }
 
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
     header {
-      background: linear-gradient(90deg, #43a047, #66bb6a);
-      padding: 18px 35px;
-      color: white;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px 0;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 30px;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 22px;
+    .logo {
+      font-size: 28px;
       font-weight: bold;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    header nav a {
-      margin-left: 25px;
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-links a {
       text-decoration: none;
-      color: white;
+      color: #333;
       font-weight: 500;
-      transition: 0.3s;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
     }
 
-    header nav a:hover {
-      text-decoration: underline;
+    .nav-links a:hover {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      transform: translateY(-2px);
     }
 
-    .assistant-box {
-      background: #fff;
-      padding: 25px;
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .chat-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
       border-radius: 20px;
-      box-shadow: 0px 6px 20px rgba(0,0,0,0.08);
-      width: 550px;
-      max-width: 95%;
-      margin: 40px auto;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
-    .assistant-box h2 {
-      margin-bottom: 18px;
-      color: #2e7d32;
-      font-size: 22px;
+    .chat-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .chat-header h2 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 15px;
     }
 
     .language-select {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
       width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 25px;
       font-size: 16px;
-      background: #f9f9f9;
-      transition: 0.3s;
+      background: white;
+      transition: all 0.3s ease;
     }
 
-    .language-select:hover {
-      border-color: #4CAF50;
+    .language-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     .chat-box {
-      max-height: 300px;
+      height: 400px;
       overflow-y: auto;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 18px;
-      text-align: left;
-      background: #fafafa;
+      border: 2px solid #e1e5e9;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      background: #f8f9fa;
     }
 
     .message {
-      margin: 10px 0;
-      padding: 12px 15px;
-      border-radius: 14px;
-      max-width: 75%;
+      margin: 15px 0;
+      padding: 15px 20px;
+      border-radius: 20px;
+      max-width: 80%;
       word-wrap: break-word;
-      font-size: 15px;
-      animation: fadeInUp 0.4s ease-in-out;
+      font-size: 16px;
+      line-height: 1.5;
+      animation: slideIn 0.3s ease-out;
     }
 
     .user-msg {
-      background: #d2f8d2;
-      align-self: flex-end;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
       margin-left: auto;
+      text-align: right;
     }
 
     .bot-msg {
-      background: #f0f0f0;
-      align-self: flex-start;
+      background: white;
+      color: #333;
+      border: 1px solid #e1e5e9;
       margin-right: auto;
     }
 
     .input-area {
       display: flex;
       align-items: flex-end;
-      gap: 10px;
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
+      gap: 15px;
+      background: white;
+      padding: 15px;
+      border-radius: 25px;
+      border: 2px solid #e1e5e9;
+      transition: all 0.3s ease;
+    }
+
+    .input-area:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .icon-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .icon-btn.recording {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      animation: pulse 1s infinite;
     }
 
     textarea#userInput {
       flex: 1;
-      min-height: 40px;
-      max-height: 150px;
+      min-height: 45px;
+      max-height: 120px;
       resize: none;
-      padding: 10px;
+      padding: 12px 15px;
       border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      line-height: 1.4;
-      overflow-y: auto;
-      background: #fff;
+      border-radius: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
     }
 
     textarea#userInput:focus {
       outline: none;
-      border: 1px solid #4CAF50;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      padding: 6px;
-      transition: 0.3s;
-    }
-
-    .icon-btn:hover {
-      transform: scale(1.2);
-      color: #388e3c;
+      background: white;
     }
 
     .send-btn {
-      background: #4CAF50;
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       border: none;
       border-radius: 50%;
-      padding: 12px;
-      cursor: pointer;
+      width: 45px;
+      height: 45px;
       font-size: 18px;
-      transition: 0.3s;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .send-btn:hover {
-      background: #43a047;
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
 
-    .features {
+    .features-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .features-title {
+      text-align: center;
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .features-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      width: 90%;
-      max-width: 1100px;
-      margin: 40px auto;
-      text-align: center;
+      gap: 25px;
     }
 
-    .card {
-      background: #fff;
+    .feature-card {
+      background: white;
       padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-      transition: 0.3s;
+      border-radius: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid #e1e5e9;
     }
 
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0px 8px 18px rgba(0,0,0,0.15);
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
 
-    .card h3 {
-      color: #2e7d32;
-      margin-bottom: 12px;
-      font-size: 18px;
+    .feature-card h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 20px;
     }
 
-    .card p {
+    .feature-card p {
+      color: #666;
       font-size: 14px;
-      color: #555;
+      line-height: 1.6;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    .speak-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .speak-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .header-content {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .nav-links {
+        gap: 15px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>AgriSage 🌱</h1>
-    <nav>
-      <a href="#">Features</a>
-      <a href="#">Admin</a>
-    </nav>
-  </header>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="logo">🌱 AgriSage</div>
+        <nav class="nav-links">
+          <a href="/admin">Admin</a>
+          <a href="/admin/users">Users</a>
+        </nav>
+      </div>
+    </header>
 
-  <div class="assistant-box">
-    <h2>AI Farmer Assistant</h2>
-    <select class="language-select" id="languageSelect">
-      <option>English</option>
-      <option>Hindi</option>
-      <option>Marathi</option>
-      <option>Tamil</option>
-      <option>Malayalam</option>
-    </select>
+    <div class="main-content">
+      <div class="chat-section">
+        <div class="chat-header">
+          <h2>AI Farmer Assistant</h2>
+          <select class="language-select" id="languageSelect">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="ml">Malayalam</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+          </select>
+        </div>
 
-    <!-- Chat messages -->
-    <div class="chat-box" id="chatBox"></div>
+        <!-- Chat messages -->
+        <div class="chat-box" id="chatBox"></div>
 
-    <!-- Input area -->
-    <div class="input-area">
-      <button class="icon-btn">🎤</button>
-      <button class="icon-btn">📷</button>
-      <textarea id="userInput" placeholder="Type your question here..."></textarea>
-      <button class="send-btn" id="sendBtn">▶</button>
-    </div>
-  </div>
+        <!-- Input area -->
+        <div class="input-area">
+          <button class="icon-btn" id="micBtn" title="Voice Input">🎤</button>
+          <button class="icon-btn" id="cameraBtn" title="Upload Image">📷</button>
+          <textarea id="userInput" placeholder="Type your farming question here..."></textarea>
+          <button class="send-btn" id="sendBtn">▶</button>
+        </div>
 
-  <h2 style="text-align:center; color:#2e7d32;">How I Can Help You</h2>
-  <div class="features">
-    <div class="card">
-      <h3>🌱 Crop Management</h3>
-      <p>Get advice on crop selection, growth, and fertilizer usage.</p>
-    </div>
-    <div class="card">
-      <h3>🧪 Disease Identification</h3>
-      <p>Upload images or symptoms to identify crop diseases.</p>
-    </div>
-    <div class="card">
-      <h3>☁ Weather Insights</h3>
-      <p>Get real-time weather forecasts for your farm.</p>
-    </div>
-    <div class="card">
-      <h3>📊 Market Prices</h3>
-      <p>Stay updated with local crop price trends.</p>
+        <!-- Image upload form (hidden) -->
+        <form id="image-form" enctype="multipart/form-data" style="display: none;">
+          <input type="file" id="crop-image" name="image" accept="image/*" />
+        </form>
+      </div>
+
+      <div class="features-section">
+        <h2 class="features-title">How I Can Help You</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>🌱 Crop Management</h3>
+            <p>Get expert advice on crop selection, growth techniques, and fertilizer usage for optimal yields.</p>
+          </div>
+          <div class="feature-card">
+            <h3>🧪 Disease Identification</h3>
+            <p>Upload crop images to identify diseases, pests, and get treatment recommendations instantly.</p>
+          </div>
+          <div class="feature-card">
+            <h3>☁ Weather Insights</h3>
+            <p>Access real-time weather forecasts and farming recommendations based on local conditions.</p>
+          </div>
+          <div class="feature-card">
+            <h3>📊 Market Prices</h3>
+            <p>Stay updated with current crop prices and market trends to maximize your profits.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -267,6 +398,10 @@
     const sendBtn = document.getElementById("sendBtn");
     const chatBox = document.getElementById("chatBox");
     const langSelect = document.getElementById("languageSelect");
+    const micBtn = document.getElementById("micBtn");
+    const cameraBtn = document.getElementById("cameraBtn");
+    const imageForm = document.getElementById("image-form");
+    const cropImage = document.getElementById("crop-image");
 
     // Auto-expand textarea
     textarea.addEventListener("input", () => {
@@ -275,13 +410,27 @@
     });
 
     // Send message
-    sendBtn.addEventListener("click", () => {
+    sendBtn.addEventListener("click", sendMessage);
+    textarea.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
       const msg = textarea.value.trim();
-      const lang = langSelect.value;
       if (msg !== "") {
-        addMessage("[" + lang + "] " + msg, "user");
+        addMessage(msg, "user");
         textarea.value = "";
-        textarea.style.height = "40px";
+        textarea.style.height = "45px";
+
+        // Show typing indicator
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "message bot-msg";
+        typingDiv.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+        chatBox.appendChild(typingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
         // Send to backend
         fetch('/api/chat', {
@@ -291,12 +440,75 @@
         })
         .then(r => r.json())
         .then(data => {
+          // Remove typing indicator
+          typingDiv.remove();
+          
           const reply = (data && (data.response || data.error)) || 'Sorry, no response.';
-          addMessage("🤖 " + reply, "bot");
+          addMessage(reply, "bot");
           addSpeakButton(reply);
         })
         .catch(() => {
+          typingDiv.remove();
           addMessage("Sorry, I encountered an error. Please try again.", "bot");
+        });
+      }
+    }
+
+    // Voice input
+    micBtn.addEventListener("click", () => {
+      if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = langSelect.value === 'en' ? 'en-US' : 
+                          (langSelect.value === 'ml' ? 'ml-IN' : 
+                          (langSelect.value === 'hi' ? 'hi-IN' : 
+                          (langSelect.value === 'ta' ? 'ta-IN' : 'te-IN')));
+        
+        micBtn.classList.add('recording');
+        addMessage("🎤 Listening...", "bot");
+        
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          textarea.value = transcript;
+          micBtn.classList.remove('recording');
+          sendMessage();
+        };
+        
+        recognition.onerror = function() {
+          addMessage("❌ Could not understand audio. Please try again.", "bot");
+          micBtn.classList.remove('recording');
+        };
+        
+        recognition.start();
+      } else {
+        addMessage("❌ Speech recognition not supported in your browser.", "bot");
+      }
+    });
+
+    // Image upload
+    cameraBtn.addEventListener("click", () => {
+      cropImage.click();
+    });
+
+    cropImage.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        addMessage("📷 Analyzing image...", "bot");
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch('/analyze_image', {
+          method: 'POST',
+          body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+          const result = data.result || 'Could not analyze image.';
+          addMessage(result, "bot");
+          addSpeakButton(result);
+        })
+        .catch(() => {
+          addMessage("❌ Error analyzing image. Please try again.", "bot");
         });
       }
     });
@@ -306,24 +518,24 @@
       const div = document.createElement("div");
       div.classList.add("message");
       div.classList.add(type === "user" ? "user-msg" : "bot-msg");
-      div.innerText = text;
+      div.innerHTML = text.replace(/\n/g, '<br>');
       chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     // Create a Speak button for bot replies
     function addSpeakButton(text) {
       const btn = document.createElement('button');
       btn.textContent = '🔊 Speak';
-      btn.className = 'send-btn';
-      btn.style.marginLeft = '8px';
+      btn.className = 'speak-btn';
       btn.addEventListener('click', () => speak(text));
+      
       const wrapper = document.createElement('div');
-      wrapper.style.display = 'flex';
-      wrapper.style.justifyContent = 'flex-start';
+      wrapper.style.marginTop = '10px';
       wrapper.appendChild(btn);
-      chatBox.appendChild(wrapper);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      
+      const lastMessage = chatBox.lastElementChild;
+      lastMessage.appendChild(wrapper);
     }
 
     // Call backend TTS and play
@@ -336,14 +548,21 @@
       .then(r => r.json())
       .then(data => {
         if (data && data.success && data.audio_path) {
-          const audio = new Audio('/' + String(data.audio_path).replace(/^\//, ''));
-          audio.play();
+          const audio = new Audio(data.audio_path);
+          audio.play().catch(() => {
+            addMessage('❌ Could not play audio.', 'bot');
+          });
         } else {
-          addMessage('Could not generate audio.', 'bot');
+          addMessage('❌ Could not generate audio.', 'bot');
         }
       })
-      .catch(() => addMessage('Audio error. Please try again.', 'bot'));
+      .catch(() => addMessage('❌ Audio error. Please try again.', 'bot'));
     }
+
+    // Add welcome message
+    window.addEventListener('load', () => {
+      addMessage("👋 Hello! I'm your AI Farming Assistant. How can I help you today?", "bot");
+    });
   </script>
 
 </body>
