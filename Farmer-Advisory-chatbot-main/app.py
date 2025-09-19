@@ -58,8 +58,15 @@ whisper_model = whisper.load_model("base")
 
 # API keys from environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or "AIzaSyAolvV8UAazfhZ-friXf5yRJ29gX3GkYRo"  # Fallback to your key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY", "demo_key")  # Default to demo key if not provided
+
+# Debug: Print API key status
+print(f"GEMINI_API_KEY loaded: {GEMINI_API_KEY is not None}")
+if GEMINI_API_KEY:
+    print(f"GEMINI_API_KEY starts with: {GEMINI_API_KEY[:10]}...")
+else:
+    print("GEMINI_API_KEY is None or empty")
 
 if OPENAI_API_KEY and openai:
     openai.api_key = OPENAI_API_KEY
@@ -95,13 +102,14 @@ def analyze_image(image_path):
         print("Loading and preparing image...")
         # Load and prepare the image
         img = Image.open(image_path)
-        img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='JPEG')
-        img_bytes = img_byte_arr.getvalue()
+        
+        # Convert to RGB if necessary (for JPEG compatibility)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
         
         print("Creating Gemini model instance...")
         # Create a Gemini model instance for image analysis
-        model = genai.GenerativeModel('gemini-pro-vision')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         # Prepare the prompt for crop disease detection
         prompt = """
@@ -114,8 +122,8 @@ def analyze_image(image_path):
         Format your response in a clear, structured way that would be helpful for a farmer.
         """
         
-        # Generate content with the image
-        response = model.generate_content([prompt, img_bytes], safety_settings=safety_settings)
+        # Generate content with the PIL Image object directly
+        response = model.generate_content([prompt, img], safety_settings=safety_settings)
         
         # Check if response has text attribute
         if hasattr(response, 'text'):
@@ -373,11 +381,21 @@ def text_to_speech(text):
     
     try:
         engine = pyttsx3.init()
-        # Save to a temporary file
-        temp_file = os.path.join(app.config['UPLOAD_FOLDER'], "response.mp3")
+        # Set properties for better audio quality
+        engine.setProperty('rate', 150)  # Speed of speech
+        engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
+        
+        # Generate unique filename
+        import time
+        timestamp = int(time.time())
+        temp_file = os.path.join(app.config['UPLOAD_FOLDER'], f"response_{timestamp}.wav")
+        
+        # Save to WAV format (pyttsx3 default)
         engine.save_to_file(text, temp_file)
         engine.runAndWait()
-        return temp_file
+        
+        # Return the relative path for web access
+        return f"/audio/{os.path.basename(temp_file)}"
     except Exception as e:
         print(f"Text-to-speech error: {e}")
         return None

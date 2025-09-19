@@ -356,17 +356,31 @@
         <div class="chat-box" id="chatBox"></div>
 
         <!-- Input area -->
-        <div class="input-area">
+        <div class="input-area" id="inputContainer">
           <button class="icon-btn" id="micBtn" title="Voice Input">🎤</button>
           <button class="icon-btn" id="cameraBtn" title="Upload Image">📷</button>
           <textarea id="userInput" placeholder="Type your farming question here..."></textarea>
           <button class="send-btn" id="sendBtn">▶</button>
         </div>
+        
+        <!-- Drag and drop zone -->
+        <div id="dropZone" style="display: none; border: 2px dashed #667eea; border-radius: 10px; padding: 20px; margin: 10px 0; text-align: center; background: rgba(102, 126, 234, 0.1);">
+          <p style="margin: 0; color: #667eea; font-weight: bold;">📷 Drop your image here for analysis</p>
+        </div>
 
-        <!-- Image upload form (hidden) -->
+        <!-- Image upload form -->
         <form id="image-form" enctype="multipart/form-data" style="display: none;">
-          <input type="file" id="crop-image" name="image" accept="image/*" />
+          <input type="file" id="crop-image" name="image" accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp" />
         </form>
+        
+        <!-- Image preview container -->
+        <div id="image-preview" style="display: none; margin: 10px 0; text-align: center;">
+          <img id="preview-img" style="max-width: 200px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+          <div style="margin-top: 10px;">
+            <button id="analyze-btn" class="send-btn" style="background: linear-gradient(135deg, #28a745, #20c997);">🔍 Analyze Image</button>
+            <button id="cancel-btn" class="send-btn" style="background: linear-gradient(135deg, #dc3545, #fd7e14); margin-left: 10px;">❌ Cancel</button>
+          </div>
+        </div>
       </div>
 
       <div class="features-section">
@@ -402,6 +416,12 @@
     const cameraBtn = document.getElementById("cameraBtn");
     const imageForm = document.getElementById("image-form");
     const cropImage = document.getElementById("crop-image");
+    const imagePreview = document.getElementById("image-preview");
+    const previewImg = document.getElementById("preview-img");
+    const analyzeBtn = document.getElementById("analyze-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+    const inputContainer = document.getElementById("inputContainer");
+    const dropZone = document.getElementById("dropZone");
 
     // Auto-expand textarea
     textarea.addEventListener("input", () => {
@@ -492,7 +512,38 @@
     cropImage.addEventListener("change", (e) => {
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          addMessage("❌ Please select a valid image file.", "bot");
+          return;
+        }
+        
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          addMessage("❌ Image file is too large. Please select an image smaller than 10MB.", "bot");
+          return;
+        }
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Analyze button
+    analyzeBtn.addEventListener("click", () => {
+      if (cropImage.files && cropImage.files[0]) {
+        const file = cropImage.files[0];
         addMessage("📷 Analyzing image...", "bot");
+        
+        // Show loading state
+        analyzeBtn.textContent = "⏳ Analyzing...";
+        analyzeBtn.disabled = true;
         
         const formData = new FormData();
         formData.append('image', file);
@@ -506,10 +557,68 @@
           const result = data.result || 'Could not analyze image.';
           addMessage(result, "bot");
           addSpeakButton(result);
+          
+          // Hide preview and reset
+          imagePreview.style.display = 'none';
+          cropImage.value = '';
+          analyzeBtn.textContent = "🔍 Analyze Image";
+          analyzeBtn.disabled = false;
         })
         .catch(() => {
           addMessage("❌ Error analyzing image. Please try again.", "bot");
+          analyzeBtn.textContent = "🔍 Analyze Image";
+          analyzeBtn.disabled = false;
         });
+      }
+    });
+
+    // Cancel button
+    cancelBtn.addEventListener("click", () => {
+      imagePreview.style.display = 'none';
+      cropImage.value = '';
+    });
+
+    // Drag and drop functionality
+    inputContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.display = 'block';
+    });
+
+    inputContainer.addEventListener('dragleave', (e) => {
+      if (!inputContainer.contains(e.relatedTarget)) {
+        dropZone.style.display = 'none';
+      }
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.background = 'rgba(102, 126, 234, 0.2)';
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+      dropZone.style.background = 'rgba(102, 126, 234, 0.1)';
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.display = 'none';
+      dropZone.style.background = 'rgba(102, 126, 234, 0.1)';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          // Simulate file input
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          cropImage.files = dataTransfer.files;
+          
+          // Trigger change event
+          const event = new Event('change', { bubbles: true });
+          cropImage.dispatchEvent(event);
+        } else {
+          addMessage("❌ Please drop a valid image file.", "bot");
+        }
       }
     });
 
@@ -540,6 +649,12 @@
 
     // Call backend TTS and play
     function speak(text) {
+      // Show loading state
+      const speakBtn = event.target;
+      const originalText = speakBtn.textContent;
+      speakBtn.textContent = '⏳ Generating...';
+      speakBtn.disabled = true;
+      
       fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -547,16 +662,32 @@
       })
       .then(r => r.json())
       .then(data => {
+        // Reset button
+        speakBtn.textContent = originalText;
+        speakBtn.disabled = false;
+        
         if (data && data.success && data.audio_path) {
           const audio = new Audio(data.audio_path);
-          audio.play().catch(() => {
-            addMessage('❌ Could not play audio.', 'bot');
-          });
+          audio.oncanplaythrough = () => {
+            audio.play().catch((error) => {
+              console.error('Audio play error:', error);
+              addMessage('❌ Could not play audio. Please check your browser settings.', 'bot');
+            });
+          };
+          audio.onerror = () => {
+            addMessage('❌ Audio file not found. Please try again.', 'bot');
+          };
         } else {
-          addMessage('❌ Could not generate audio.', 'bot');
+          addMessage('❌ Could not generate audio: ' + (data.error || 'Unknown error'), 'bot');
         }
       })
-      .catch(() => addMessage('❌ Audio error. Please try again.', 'bot'));
+      .catch((error) => {
+        // Reset button
+        speakBtn.textContent = originalText;
+        speakBtn.disabled = false;
+        console.error('TTS fetch error:', error);
+        addMessage('❌ Audio error. Please try again.', 'bot');
+      });
     }
 
     // Add welcome message
