@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agrosaga - Register & Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .header h2 {
+      margin: 0;
+      color: #2e7d32;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.6rem;
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+    .btn:hover {
+      background: #2e7d32;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #2e7d32;
+      cursor: pointer;
+    }
+    .toggle-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h2 id="formTitle">Register</h2>
+    </div>
+
+    <!-- Register Form -->
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="regName">Name</label>
+        <input type="text" id="regName" placeholder="Enter your name" required>
+      </div>
+      <div class="form-group">
+        <label for="regMobile">Mobile No</label>
+        <input type="text" id="regMobile" placeholder="Enter mobile number" required>
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="regPass">Password</label>
+        <input type="password" id="regPass" placeholder="Enter password" required>
+      </div>
+      <div class="form-group">
+        <label for="regConfirmPass">Confirm Password</label>
+        <input type="password" id="regConfirmPass" placeholder="Confirm password" required>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+
+    <!-- Login Form -->
+    <form id="loginForm" style="display: none;">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter email" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <!-- Toggle Links -->
+    <div class="toggle-link" onclick="toggleForm()">Already have an account? Login</div>
+  </div>
+
+  <script>
+    function toggleForm() {
+      let regForm = document.getElementById("registerForm");
+      let loginForm = document.getElementById("loginForm");
+      let title = document.getElementById("formTitle");
+      let toggleText = document.querySelector(".toggle-link");
+
+      if (regForm.style.display === "none") {
+        regForm.style.display = "block";
+        loginForm.style.display = "none";
+        title.innerText = "Register";
+        toggleText.innerText = "Already have an account? Login";
+      } else {
+        regForm.style.display = "none";
+        loginForm.style.display = "block";
+        title.innerText = "Login";
+        toggleText.innerText = "Don't have an account? Register";
+      }
+    }
+  </script>
+</body>
+</html>

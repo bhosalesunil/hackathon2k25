@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Registered Users</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <style>
+    table { font-size: 14px; }
+    td, th { white-space: nowrap; }
+  </style>
+  </head>
+<body>
+  <main class="container">
+    <h2>Registered Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Created</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>District</th>
+          <th>State</th>
+          <th>Language</th>
+          <th>Land (acres)</th>
+          <th>Preferred Crops</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u[0] }}</td>
+          <td>{{ u[1] }}</td>
+          <td>{{ u[2] }}</td>
+          <td>{{ u[3] }}</td>
+          <td>{{ u[4] or '' }}</td>
+          <td>{{ u[5] or '' }}</td>
+          <td>{{ u[6] or '' }}</td>
+          <td>{{ u[7] or '' }}</td>
+          <td>{{ u[8] or '' }}</td>
+          <td>{{ u[9] or '' }}</td>
+          <td>{{ u[10] or '' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><a href="/admin">← Back to Dashboard</a></p>
+  </main>
+</body>
+</html>
+
+

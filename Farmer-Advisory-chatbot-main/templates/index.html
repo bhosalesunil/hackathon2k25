@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSage  – AI Farmer Assistant</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(90deg, #43a047, #66bb6a);
+      padding: 18px 35px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    header nav a {
+      margin-left: 25px;
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    header nav a:hover {
+      text-decoration: underline;
+    }
+
+    .assistant-box {
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0px 6px 20px rgba(0,0,0,0.08);
+      width: 550px;
+      max-width: 95%;
+      margin: 40px auto;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .assistant-box h2 {
+      margin-bottom: 18px;
+      color: #2e7d32;
+      font-size: 22px;
+    }
+
+    .language-select {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      width: 100%;
+      font-size: 16px;
+      background: #f9f9f9;
+      transition: 0.3s;
+    }
+
+    .language-select:hover {
+      border-color: #4CAF50;
+    }
+
+    .chat-box {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 18px;
+      text-align: left;
+      background: #fafafa;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 12px 15px;
+      border-radius: 14px;
+      max-width: 75%;
+      word-wrap: break-word;
+      font-size: 15px;
+      animation: fadeInUp 0.4s ease-in-out;
+    }
+
+    .user-msg {
+      background: #d2f8d2;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    .bot-msg {
+      background: #f0f0f0;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+
+    .input-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+    }
+
+    textarea#userInput {
+      flex: 1;
+      min-height: 40px;
+      max-height: 150px;
+      resize: none;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.4;
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    textarea#userInput:focus {
+      outline: none;
+      border: 1px solid #4CAF50;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 6px;
+      transition: 0.3s;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.2);
+      color: #388e3c;
+    }
+
+    .send-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+
+    .send-btn:hover {
+      background: #43a047;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1100px;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    .card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0px 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      color: #2e7d32;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AgriSage 🌱</h1>
+    <nav>
+      <a href="#">Features</a>
+      <a href="#">Admin</a>
+    </nav>
+  </header>
+
+  <div class="assistant-box">
+    <h2>AI Farmer Assistant</h2>
+    <select class="language-select" id="languageSelect">
+      <option>English</option>
+      <option>Hindi</option>
+      <option>Marathi</option>
+      <option>Tamil</option>
+      <option>Malayalam</option>
+    </select>
+
+    <!-- Chat messages -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- Input area -->
+    <div class="input-area">
+      <button class="icon-btn">🎤</button>
+      <button class="icon-btn">📷</button>
+      <textarea id="userInput" placeholder="Type your question here..."></textarea>
+      <button class="send-btn" id="sendBtn">▶</button>
+    </div>
+  </div>
+
+  <h2 style="text-align:center; color:#2e7d32;">How I Can Help You</h2>
+  <div class="features">
+    <div class="card">
+      <h3>🌱 Crop Management</h3>
+      <p>Get advice on crop selection, growth, and fertilizer usage.</p>
+    </div>
+    <div class="card">
+      <h3>🧪 Disease Identification</h3>
+      <p>Upload images or symptoms to identify crop diseases.</p>
+    </div>
+    <div class="card">
+      <h3>☁ Weather Insights</h3>
+      <p>Get real-time weather forecasts for your farm.</p>
+    </div>
+    <div class="card">
+      <h3>📊 Market Prices</h3>
+      <p>Stay updated with local crop price trends.</p>
+    </div>
+  </div>
+
+  <script>
+    const textarea = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatBox = document.getElementById("chatBox");
+    const langSelect = document.getElementById("languageSelect");
+
+    // Auto-expand textarea
+    textarea.addEventListener("input", () => {
+      textarea.style.height = "auto"; 
+      textarea.style.height = textarea.scrollHeight + "px";
+    });
+
+    // Send message
+    sendBtn.addEventListener("click", () => {
+      const msg = textarea.value.trim();
+      const lang = langSelect.value;
+      if (msg !== "") {
+        addMessage("[" + lang + "] " + msg, "user");
+        textarea.value = "";
+        textarea.style.height = "40px";
+
+        // Send to backend
+        fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg })
+        })
+        .then(r => r.json())
+        .then(data => {
+          const reply = (data && (data.response || data.error)) || 'Sorry, no response.';
+          addMessage("🤖 " + reply, "bot");
+          addSpeakButton(reply);
+        })
+        .catch(() => {
+          addMessage("Sorry, I encountered an error. Please try again.", "bot");
+        });
+      }
+    });
+
+    // Add message to chat
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.classList.add("message");
+      div.classList.add(type === "user" ? "user-msg" : "bot-msg");
+      div.innerText = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll
+    }
+
+    // Create a Speak button for bot replies
+    function addSpeakButton(text) {
+      const btn = document.createElement('button');
+      btn.textContent = '🔊 Speak';
+      btn.className = 'send-btn';
+      btn.style.marginLeft = '8px';
+      btn.addEventListener('click', () => speak(text));
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.justifyContent = 'flex-start';
+      wrapper.appendChild(btn);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Call backend TTS and play
+    function speak(text) {
+      fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.success && data.audio_path) {
+          const audio = new Audio('/' + String(data.audio_path).replace(/^\//, ''));
+          audio.play();
+        } else {
+          addMessage('Could not generate audio.', 'bot');
+        }
+      })
+      .catch(() => addMessage('Audio error. Please try again.', 'bot'));
+    }
+  </script>
+
+</body>
+</html>
